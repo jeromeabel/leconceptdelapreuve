@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const comics = await getCollection('comics');
+const sortedComics = comics.sort((a, b) => 
+  b.data.date.getTime() - a.data.date.getTime()
+);
+---
+
+<Layout title="La Preuve du Concept - BD françaises">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Découvrez nos BD
+      </h2>
+      <p class="text-gray-600 text-lg">
+        Une collection de bandes dessinées françaises
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+      {sortedComics.map((comic) => (
+        <a 
+          href={`/comics/${comic.slug}`}
+          class="group block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
+        >
+          <div class="aspect-[4/3] overflow-hidden">
+            <img 
+              src={comic.data.panel1}
+              alt={`${comic.data.title} - Panel 1`}
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            />
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+              {comic.data.title}
+            </h3>
+            <p class="text-gray-600 text-sm mb-2">
+              Par {comic.data.author}
+            </p>
+            <p class="text-gray-500 text-xs">
+              {comic.data.date.toLocaleDateString('fr-FR', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
+            {comic.data.description && (
+              <p class="text-gray-600 text-sm mt-3">
+                {comic.data.description}
+              </p>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>

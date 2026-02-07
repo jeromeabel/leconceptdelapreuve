@@ -1,0 +1,33 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  panelNumber: number;
+}
+
+const { src, alt, panelNumber } = Astro.props;
+---
+
+<div class="comic-panel bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="aspect-[4/3] relative">
+    <img 
+      src={src} 
+      alt={alt}
+      class="w-full h-full object-cover"
+      loading="lazy"
+    />
+    <div class="absolute top-2 left-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
+      Panel {panelNumber}
+    </div>
+  </div>
+</div>
+
+<style>
+  .comic-panel {
+    transition: transform 0.2s ease;
+  }
+  
+  .comic-panel:hover {
+    transform: translateY(-4px);
+  }
+</style>

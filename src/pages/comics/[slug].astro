@@ -1,0 +1,105 @@
+---
+import { getCollection } from 'astro:content';
+import { db, Votes, Users, eq } from 'astro:db';
+import Layout from '../../layouts/Layout.astro';
+import ComicPanel from '../../components/ComicPanel.astro';
+import VoteButton from '../../components/VoteButton.astro';
+
+export async function getStaticPaths() {
+  const comics = await getCollection('comics');
+  return comics.map(comic => ({
+    params: { slug: comic.slug },
+    props: { comic },
+  }));
+}
+
+const { comic } = Astro.props;
+const { Content } = await comic.render();
+
+// Get vote count for this comic
+const voteData = await db.select().from(Votes).where(eq(Votes.comic_id, comic.slug)).get();
+const voteCount = voteData?.count || 0;
+
+// Check if user has already voted
+const userHash = Astro.cookies.get('user_id')?.value;
+let hasVoted = false;
+
+if (userHash) {
+  const user = await db.select().from(Users).where(eq(Users.cookie_hash, userHash)).get();
+  if (user) {
+    const votedIds = JSON.parse(user.voted_ids || '[]');
+    hasVoted = votedIds.includes(comic.slug);
+  }
+}
+---
+
+<Layout title={`${comic.data.title} - La Preuve du Concept`} description={comic.data.description}>
+  <div class="max-w-4xl mx-auto">
+    <!-- Back button -->
+    <div class="mb-6">
+      <a 
+        href="/" 
+        class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+      >
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Retour aux BD
+      </a>
+    </div>
+    
+    <!-- Comic header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        {comic.data.title}
+      </h1>
+      <div class="flex flex-wrap items-center gap-4 text-gray-600">
+        <span>Par <strong>{comic.data.author}</strong></span>
+        <span>•</span>
+        <span>
+          {comic.data.date.toLocaleDateString('fr-FR', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
+        </span>
+      </div>
+      {comic.data.description && (
+        <p class="text-gray-600 mt-4">
+          {comic.data.description}
+        </p>
+      )}
+    </div>
+    
+    <!-- Comic panels -->
+    <div class="space-y-6 mb-8">
+      <ComicPanel 
+        src={comic.data.panel1} 
+        alt={`${comic.data.title} - Panel 1`}
+        panelNumber={1}
+      />
+      <ComicPanel 
+        src={comic.data.panel2} 
+        alt={`${comic.data.title} - Panel 2`}
+        panelNumber={2}
+      />
+    </div>
+    
+    <!-- Vote section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">
+        Vous avez aimé cette BD ?
+      </h2>
+      <VoteButton 
+        comicId={comic.slug} 
+        initialVotes={voteCount}
+        hasVoted={hasVoted}
+      />
+    </div>
+    
+    <!-- Content -->
+    <div class="prose max-w-none bg-white rounded-lg shadow-md p-6">
+      <Content />
+    </div>
+  </div>
+</Layout>
