@@ -1,0 +1,72 @@
+---
+interface Props {
+	date: Date;
+	slug: string;
+	title: string;
+}
+
+const { date, slug, title } = Astro.props;
+const formattedDate = date.toLocaleDateString('fr-FR', {
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit',
+});
+const permalink = new URL(`/comics/${slug}`, Astro.site).href;
+---
+
+<div class="flex flex-wrap items-center gap-4 py-4 text-sm text-zinc-500">
+	<time datetime={date.toISOString()}>{formattedDate}</time>
+
+	<span class="text-zinc-300">|</span>
+
+	<!-- Share: Web Share API with social links fallback -->
+	<share-button class="contents" data-title={title} data-url={permalink}>
+		<button type="button" class="hover:text-zinc-900 js-share-native hidden">
+			Partager
+		</button>
+		<span class="js-share-fallback flex gap-3">
+			<a
+				href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(permalink)}`}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="hover:text-zinc-900"
+			>
+				X
+			</a>
+			<a
+				href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(permalink)}`}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="hover:text-zinc-900"
+			>
+				Facebook
+			</a>
+		</span>
+	</share-button>
+
+	<span class="text-zinc-300">|</span>
+
+	<a href={`/comics/${slug}`} class="hover:text-zinc-900">Permalien</a>
+</div>
+
+<script>
+	class ShareButton extends HTMLElement {
+		connectedCallback() {
+			if (!navigator.share) return;
+
+			const native = this.querySelector('.js-share-native') as HTMLElement;
+			const fallback = this.querySelector('.js-share-fallback') as HTMLElement;
+
+			native?.classList.remove('hidden');
+			fallback?.classList.add('hidden');
+
+			native?.addEventListener('click', () => {
+				navigator.share({
+					title: this.dataset.title,
+					url: this.dataset.url,
+				});
+			});
+		}
+	}
+	customElements.define('share-button', ShareButton);
+</script>
