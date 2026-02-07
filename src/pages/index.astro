@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
+import { Picture } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
+import ActionPanel from '../components/ActionPanel.astro';
 
 const comics = await getCollection('comics');
 const latestComic = comics
@@ -10,24 +12,25 @@ const latestComic = comics
 
 <Layout>
 	{latestComic ? (
-		<article class="space-y-4">
-			<p class="text-sm text-zinc-500">
-				{latestComic.data.date.toLocaleDateString('fr-FR', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric',
-				})}
-			</p>
-			<img
-				src={latestComic.data.cover.src}
-				width={latestComic.data.cover.width}
-				height={latestComic.data.cover.height}
-				alt={latestComic.data.alt}
-				loading="eager"
+		<article>
+			<div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+				{latestComic.data.pages.map((page, i) => (
+					<Picture
+						src={page}
+						formats={['avif', 'webp']}
+						alt={`${latestComic.data.alt} — page ${i + 1}`}
+						class="w-full h-auto"
+						loading={i === 0 ? 'eager' : 'lazy'}
+					/>
+				))}
+			</div>
+			<ActionPanel
+				date={latestComic.data.date}
+				slug={latestComic.id}
+				title={latestComic.data.title}
 			/>
-			
 		</article>
 	) : (
-		<p class="text-zinc-500">Aucune bande dessinee pour le moment.</p>
+		<p class="text-zinc-500">Aucune bande dessinée pour le moment.</p>
 	)}
 </Layout>
