@@ -1,23 +1,26 @@
+---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import '../styles/global.css';
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>Le concept de la preuve</title>
 	</head>
-	<body>
-		<slot />
+	<body class="min-h-screen bg-white text-zinc-900 font-sans">
+		<div class="mx-auto flex min-h-screen max-w-7xl flex-col px-4">
+			<Header />
+			<main class="flex-1 py-10">
+				<slot />
+			</main>
+			<Footer />
+		</div>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

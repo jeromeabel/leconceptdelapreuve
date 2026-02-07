@@ -1,46 +1,100 @@
-# Astro Starter Kit: Basics
+# Le concept de la preuve
 
-```sh
-pnpm create astro@latest -- --template basics
+A minimal French comic blog featuring two-panel tech comics with speech bubbles and an ironic tone. Built with Astro, Tailwind CSS, and deployed on Netlify.
+
+## Tech Stack
+
+- **[Astro v5](https://astro.build/)** — hybrid rendering (static pages + server API)
+- **[Astro DB](https://docs.astro.build/en/guides/astro-db/)** — libSQL/SQLite database for votes
+- **[Tailwind CSS v4](https://tailwindcss.com/)** — via `@tailwindcss/vite` plugin
+- **[Netlify](https://www.netlify.com/)** — deployment adapter with SSR support
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- [pnpm](https://pnpm.io/)
+
+### Install
+
+```bash
+pnpm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### Development
 
-## 🚀 Project Structure
+```bash
+pnpm dev
+```
 
-Inside of your Astro project, you'll see the following folders and files:
+Opens a local dev server at `http://localhost:4321`. The database is created and seeded automatically on first run.
 
-```text
-/
+### Build
+
+```bash
+pnpm build
+```
+
+The build script sets `ASTRO_DATABASE_FILE` automatically for local builds. For production with a remote database, use `astro build --remote` instead.
+
+### Preview
+
+```bash
+pnpm preview
+```
+
+## Project Structure
+
+```
+├── db/
 ├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+├── src/
+│   ├── components/
+│   ├── content.config.ts      # Content collection schema
+│   ├── data/
+│   │   └── comics/            # Comic markdown files (frontmatter)
+│   ├── layouts/
+│   ├── pages/
+│   │   ├── api/
+│   │   ├── comics/
+│   │   │   └── [slug].astro   # Comic detail page (prerendered)
+│   │   └── index.astro        # Landing page (prerendered)
+│   └── styles/
+│       └── global.css         # Tailwind v4 + custom theme
+├── astro.config.ts
+└── tsconfig.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## How It Works
 
-## 🧞 Commands
+### Comics
 
-All commands are run from the root of the project, from a terminal:
+Comics are defined as markdown files in `src/data/comics/` with frontmatter (title, slug, panel images, speech bubble text). They are also seeded into the Astro DB `Comic` table for vote tracking.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+### Voting System
 
-## 👀 Want to learn more?
+- Cookie-based visitor identification — a random ID is set on first vote
+- The visitor ID is SHA-256 hashed before storage in the database
+- A unique index on `[comicId, visitorHash]` enforces one vote per visitor per comic
+- `GET /api/vote?comicId=X` returns the current count and whether the visitor has voted
+- `POST /api/vote` with `{ comicId }` registers a new vote
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Rendering Strategy
+
+- **Static pages** (default): landing page and comic detail pages are prerendered at build time
+- **Server endpoint**: `/api/vote` runs on-demand via Netlify Functions
+
+## Environment Variables
+
+See `.env.example` for all available variables:
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ASTRO_DATABASE_FILE` | For local build | Path to local SQLite file (set in build script) |
+| `ASTRO_DB_REMOTE_URL` | For production | Turso/libSQL connection string |
+| `ASTRO_DB_APP_TOKEN` | For production | Database auth token |
+
+## License
+
+See [LICENSE](LICENSE) for details.

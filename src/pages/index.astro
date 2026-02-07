@@ -1,11 +1,33 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const comics = await getCollection('comics');
+const latestComic = comics
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.at(0);
 ---
 
 <Layout>
-	<Welcome />
+	{latestComic ? (
+		<article class="space-y-4">
+			<p class="text-sm text-zinc-500">
+				{latestComic.data.date.toLocaleDateString('fr-FR', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric',
+				})}
+			</p>
+			<img
+				src={latestComic.data.image.src}
+				width={latestComic.data.image.width}
+				height={latestComic.data.image.height}
+				alt={latestComic.data.alt}
+				loading="eager"
+			/>
+			
+		</article>
+	) : (
+		<p class="text-zinc-500">Aucune bande dessinee pour le moment.</p>
+	)}
 </Layout>
