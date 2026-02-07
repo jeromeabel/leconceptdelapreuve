@@ -1,7 +1,7 @@
 {
   "name": "lapreuveduconcept",
   "version": "1.0.0",
-  "description": "French comics blog built with Astro 4, TypeScript, Tailwind CSS, and Astro DB",
+  "description": "French comics blog built with Astro 5, TypeScript, Tailwind CSS, and Astro DB",
   "type": "module",
   "scripts": {
     "dev": "astro dev",
