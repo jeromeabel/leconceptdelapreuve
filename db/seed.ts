@@ -1,4 +1,4 @@
-import { db, Votes, Users } from 'astro:db';
+import { db, Votes } from 'astro:db';
 
 export default async function seed() {
   // Seed initial comics votes

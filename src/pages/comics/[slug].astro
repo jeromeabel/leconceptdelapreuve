@@ -1,19 +1,22 @@
 ---
-import { getCollection } from 'astro:content';
+export const prerender = false;
+
+import { getCollection, getEntry } from 'astro:content';
 import { db, Votes, Users, eq } from 'astro:db';
 import Layout from '../../layouts/Layout.astro';
 import ComicPanel from '../../components/ComicPanel.astro';
 import VoteButton from '../../components/VoteButton.astro';
 
-export async function getStaticPaths() {
-  const comics = await getCollection('comics');
-  return comics.map(comic => ({
-    params: { slug: comic.slug },
-    props: { comic },
-  }));
+// Get the slug from the URL
+const { slug } = Astro.params;
+
+// Fetch the comic entry
+const comic = await getEntry('comics', slug as string);
+
+if (!comic) {
+  return Astro.redirect('/404');
 }
 
-const { comic } = Astro.props;
 const { Content } = await comic.render();
 
 // Get vote count for this comic

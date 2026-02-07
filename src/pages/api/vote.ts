@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { db, Votes, Users, eq } from 'astro:db';
 
+export const prerender = false;
+
 // Generate a simple hash for cookie
 function generateCookieHash(): string {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);

@@ -1,7 +1,7 @@
 {
   "name": "lapreuveduconcept",
   "version": "1.0.0",
-  "description": "",
+  "description": "French comics blog built with Astro 4, TypeScript, Tailwind CSS, and Astro DB",
   "type": "module",
   "scripts": {
     "dev": "astro dev",
@@ -23,10 +23,12 @@
   },
   "homepage": "https://github.com/jeromeabel/lapreuveduconcept#readme",
   "dependencies": {
+    "@astrojs/check": "^0.9.6",
     "@astrojs/db": "^0.19.0",
+    "@astrojs/netlify": "^6.6.4",
     "@astrojs/tailwind": "^6.0.2",
-    "astro": "^4.16.19",
-    "tailwindcss": "^4.1.18",
+    "astro": "^5.17.1",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3"
   }
 }
