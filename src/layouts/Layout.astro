@@ -1,34 +1,30 @@
 ---
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import SEO from '../components/SEO.astro';
 import '../styles/global.css';
 
-interface Props {
+export interface Props {
 	title?: string;
 	description?: string;
-	ogImage?: string;
+	image?: { src: string; width?: number; height?: number };
+	type?: 'website' | 'article';
+	publishedDate?: Date;
 }
 
-const {
-	title = 'Le concept de la preuve',
-	description = 'Bande dessinée par Jérôme Abel',
-	ogImage,
-} = Astro.props;
+const { title, description, image, type, publishedDate } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="fr">
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		{ogImage && <meta property="og:image" content={ogImage} />}
+		<SEO
+			title={title}
+			description={description}
+			image={image}
+			type={type}
+			publishedDate={publishedDate}
+		/>
 	</head>
 	<body class="min-h-screen bg-white text-zinc-900 font-sans">
 		<div class="mx-auto flex min-h-screen max-w-7xl flex-col px-4">

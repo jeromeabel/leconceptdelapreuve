@@ -10,7 +10,11 @@ const latestComic = comics
 	.at(0);
 ---
 
-<Layout ogImage={latestComic?.data.cover.src}>
+<Layout
+	image={latestComic ? { src: latestComic.data.cover.src, width: latestComic.data.cover.width, height: latestComic.data.cover.height } : undefined}
+	type="article"
+	publishedDate={latestComic?.data.date}
+>
 	{latestComic ? (
 		<article>
 			<div class="grid grid-cols-1 gap-2 md:grid-cols-2">

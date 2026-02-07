@@ -1,0 +1,67 @@
+---
+export interface Props {
+	title?: string;
+	description?: string;
+	image?: { src: string; width?: number; height?: number };
+	type?: 'website' | 'article';
+	publishedDate?: Date;
+}
+
+const siteName = 'Le concept de la preuve';
+
+const {
+	title = siteName,
+	description = 'Bande dessinée par Jérôme Abel',
+	image,
+	type = 'website',
+	publishedDate,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImageURL = image?.src ? new URL(image.src, Astro.site) : undefined;
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+
+<!-- Favicons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" href="/favicon.ico" />
+
+<!-- Primary Meta Tags -->
+<meta name="generator" content={Astro.generator} />
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="author" content="Jérôme Abel" />
+<link rel="canonical" href={canonicalURL} />
+<meta name="robots" content="index, follow" />
+
+<!-- Open Graph -->
+<meta property="og:site_name" content={siteName} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:locale" content="fr_FR" />
+{socialImageURL && (
+	<>
+		<meta property="og:image" content={socialImageURL} />
+		<meta property="og:image:alt" content={title} />
+		{image?.width && <meta property="og:image:width" content={image.width.toString()} />}
+		{image?.height && <meta property="og:image:height" content={image.height.toString()} />}
+	</>
+)}
+{publishedDate && (
+	<meta property="article:published_time" content={publishedDate.toISOString()} />
+)}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content={socialImageURL ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{socialImageURL && (
+	<>
+		<meta name="twitter:image" content={socialImageURL} />
+		<meta name="twitter:image:alt" content={title} />
+	</>
+)}
