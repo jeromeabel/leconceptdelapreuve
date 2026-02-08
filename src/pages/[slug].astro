@@ -13,10 +13,12 @@ export async function getStaticPaths() {
 }
 
 const { comic } = Astro.props;
+const siteName = 'Le concept de la preuve';
+const pageTitle = ` ${comic.id} - ${siteName}`;
 ---
 
 <Layout
-	title={comic.data.title}
+	title={pageTitle}
 	image={{ src: comic.data.cover.src, width: comic.data.cover.width, height: comic.data.cover.height }}
 	type="article"
 	publishedDate={comic.data.date}
