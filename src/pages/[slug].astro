@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import ActionPanel from '../components/ActionPanel.astro';
+import MetaBar from '../components/MetaBar.astro';
 import ComicImage from '../components/ComicImage.astro';
 
 export async function getStaticPaths() {
@@ -20,9 +20,10 @@ const { comic } = Astro.props;
 	image={{ src: comic.data.cover.src, width: comic.data.cover.width, height: comic.data.cover.height }}
 	type="article"
 	publishedDate={comic.data.date}
+	currentSlug={comic.id}
 >
 	<article>
-		<div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+		<div class="comic-grid grid grid-cols-1 md:grid-cols-2">
 			{comic.data.pages.map((page, i) => (
 				<ComicImage
 					src={page}
@@ -31,7 +32,7 @@ const { comic } = Astro.props;
 				/>
 			))}
 		</div>
-		<ActionPanel
+		<MetaBar
 			date={comic.data.date}
 			slug={comic.id}
 			title={comic.data.title}

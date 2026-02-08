@@ -8,6 +8,38 @@
   --font-mono: "Inconsolata", monospace;
 }
 
+a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: currentColor;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-thickness 150ms ease;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
+
+.page-shell {
+  max-width: var(--page-max);
+  padding-left: var(--page-pad);
+  padding-right: var(--page-pad);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.comic-grid {
+  /* Column width derives from layout tokens; keep it an integer pixel to avoid blur. */
+  gap: var(--comic-gap);
+  margin-block: var(--comic-margin);
+}
+
 @keyframes fade-in {
   from { opacity: 0; filter: blur(10px); }
   to { opacity: 1; filter: blur(0); }

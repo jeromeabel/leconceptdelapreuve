@@ -9,7 +9,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "optimize-images": "node scripts/optimize-images.js",
-    "optimize-images:dry": "node scripts/optimize-images.js --dry-run"
+    "generate-cover": "node scripts/generate-cover.js"
   },
   "dependencies": {
     "@astrojs/netlify": "^6.6.4",
@@ -18,9 +18,11 @@
     "@fontsource/red-hat-mono": "^5.2.8",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.17.1",
+    "astro-icon": "^1.1.5",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
+    "@iconify-json/carbon": "^1.2.18",
     "sharp": "^0.34.5"
   }
 }
