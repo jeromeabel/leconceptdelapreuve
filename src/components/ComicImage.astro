@@ -25,15 +25,21 @@ const widths = [360, 480, Math.round(twoColMax), Math.round(oneColMax), Math.rou
 	.sort((a, b) => a - b);
 ---
 
-<Picture
-	src={src}
-	formats={['avif', 'webp']}
-	widths={widths}
-	sizes="(min-width: 768px) calc((min(100vw, var(--page-max)) - (var(--page-pad) * 2) - var(--comic-gap)) / 2), 100vw"
-	alt={alt}
-	loading={isFirst ? 'eager' : 'lazy'}
-	fetchpriority={isFirst ? 'high' : undefined}
-	data-fade-in
-	style="opacity: 0"
-	class:list={['w-full h-auto outline outline-zinc-700', className]}
-/>
+<div class="reveal-img">
+	<Picture
+		src={src}
+		formats={['avif', 'webp']}
+		widths={widths}
+		sizes="(min-width: 768px) calc((min(100vw, var(--page-max)) - (var(--page-pad) * 2) - var(--comic-gap)) / 2), 100vw"
+		alt={alt}
+		loading={isFirst ? 'eager' : 'lazy'}
+		fetchpriority={isFirst ? 'high' : undefined}
+		class:list={['w-full h-auto outline outline-zinc-700', className]}
+	/>
+</div>
+
+<style>
+	.reveal-img picture {
+		opacity: 0;
+	}
+</style>
