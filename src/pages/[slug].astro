@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import { Picture } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import ActionPanel from '../components/ActionPanel.astro';
+import ComicImage from '../components/ComicImage.astro';
 
 export async function getStaticPaths() {
 	const comics = await getCollection('comics');
@@ -24,12 +24,10 @@ const { comic } = Astro.props;
 	<article>
 		<div class="grid grid-cols-1 gap-2 md:grid-cols-2">
 			{comic.data.pages.map((page, i) => (
-				<Picture
+				<ComicImage
 					src={page}
-					formats={['avif', 'webp']}
 					alt={`${comic.data.alt} — page ${i + 1}`}
-					class="w-full h-auto"
-					loading={i === 0 ? 'eager' : 'lazy'}
+					index={i}
 				/>
 			))}
 		</div>

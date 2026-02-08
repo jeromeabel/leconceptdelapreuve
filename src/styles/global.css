@@ -1,16 +1,18 @@
-@import "@fontsource/lekton/400.css";
-@import "@fontsource/lekton/700.css";
-
-
-@import "@fontsource/red-hat-mono/400.css";
-@import "@fontsource/red-hat-mono/700.css";
-
 @import "@fontsource/inconsolata/400.css";
+@import "@fontsource/inconsolata/600.css";
 @import "@fontsource/inconsolata/700.css";
 @import "tailwindcss";
-@plugin '@tailwindcss/typography';
 
 @theme {
-  --font-sans: "Lekton", monospace;
+  --font-sans: "Inconsolata", monospace;
   --font-mono: "Inconsolata", monospace;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; filter: blur(10px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 400ms ease-out;
 }

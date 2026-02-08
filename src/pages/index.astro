@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import { Picture } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import ActionPanel from '../components/ActionPanel.astro';
+import ComicImage from '../components/ComicImage.astro';
 
 const comics = await getCollection('comics');
 const latestComic = comics
@@ -19,12 +19,10 @@ const latestComic = comics
 		<article>
 			<div class="grid grid-cols-1 gap-2 md:grid-cols-2">
 				{latestComic.data.pages.map((page, i) => (
-					<Picture
+					<ComicImage
 						src={page}
-						formats={['avif', 'webp']}
 						alt={`${latestComic.data.alt} — page ${i + 1}`}
-						class="w-full h-auto border border-zinc-500"
-						loading={i === 0 ? 'eager' : 'lazy'}
+						index={i}
 					/>
 				))}
 			</div>
