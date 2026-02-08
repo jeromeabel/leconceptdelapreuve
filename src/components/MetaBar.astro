@@ -33,7 +33,7 @@ const shareLinks = [
 
 	<span class="text-zinc-500" aria-hidden="true">|</span>
 
-	<share-button class="contents">
+	<meta-actions class="contents">
 		<div class="flex flex-wrap items-center gap-3" role="group" aria-label="Partager">
 			{shareLinks.map(({ href, label, icon, popup }) => (
 				<a
@@ -41,7 +41,7 @@ const shareLinks = [
 					target={popup ? '_blank' : undefined}
 					rel={popup ? 'noopener noreferrer' : undefined}
 					aria-label={label}
-					class="share-link no-underline hidden md:inline-flex items-center justify-center p-2 text-zinc-600 hover:text-zinc-900 transition-colors"
+					class="meta-link no-underline hidden md:inline-flex items-center justify-center p-2 text-zinc-600 hover:text-zinc-900 transition-colors"
 					data-popup={popup ? 'true' : undefined}
 				>
 					<Icon name={icon} class="size-4" aria-hidden="true" />
@@ -73,7 +73,7 @@ const shareLinks = [
 				</span>
 			</button>
 		</div>
-	</share-button>
+	</meta-actions>
 
 	<a
 		href={`/${slug}`}
@@ -93,7 +93,7 @@ const shareLinks = [
 		}
 
 		private setupPopupLinks() {
-			this.querySelectorAll<HTMLAnchorElement>('a.share-link[data-popup]').forEach((link) => {
+			this.querySelectorAll<HTMLAnchorElement>('a.meta-link[data-popup]').forEach((link) => {
 				link.addEventListener('click', (e) => {
 					e.preventDefault();
 					window.open(link.href, '_blank', 'width=600,height=500,noopener,noreferrer');
@@ -152,5 +152,5 @@ const shareLinks = [
 			});
 		}
 	}
-	customElements.define('share-button', ShareButton);
+	customElements.define('meta-actions', ShareButton);
 </script>
