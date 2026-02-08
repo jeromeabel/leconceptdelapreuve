@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import ActionPanel from '../components/ActionPanel.astro';
+import MetaBar from '../components/MetaBar.astro';
 import ComicImage from '../components/ComicImage.astro';
 
 const comics = await getCollection('comics');
@@ -26,7 +26,7 @@ const latestComic = comics
 					/>
 				))}
 			</div>
-			<ActionPanel
+			<MetaBar
 				date={latestComic.data.date}
 				slug={latestComic.id}
 				title={latestComic.data.title}

@@ -8,6 +8,23 @@
   --font-mono: "Inconsolata", monospace;
 }
 
+a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: currentColor;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-thickness 150ms ease;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
 
 .page-shell {
   max-width: var(--page-max);
