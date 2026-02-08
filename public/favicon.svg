@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <path d="M20 20 H108 V96 H60 L30 112 L40 96 H20 V20 Z" fill="#18181b" stroke="none"/>
-  <style>
-    @media (prefers-color-scheme: dark) {
-      path { fill: #ffffff; }
-    }
-  </style>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="16" ry="16" style="fill:#fff;stroke:none;stroke-width:.40661;stroke-linecap:round;paint-order:markers stroke fill"/><path fill="#18181b" d="M20 20h88v76H60l-30 16 10-16H20z"/></svg>
