@@ -10,25 +10,31 @@
  * - Preserves original images in 'original/' subdirectories
  *
  * Usage:
- *   pnpm optimize-images [--dry-run]
+ *   pnpm optimize-images <comic-id> [--dry-run]
+ *   pnpm optimize-images 001
+ *   pnpm optimize-images 001 --dry-run
  */
 
-import { mkdir, copyFile, stat, unlink } from "fs/promises";
+import { readFile, mkdir, copyFile, stat, unlink } from "fs/promises";
 import { join, basename, dirname } from "path";
 import sharp from "sharp";
 
-const isDryRun = process.argv.includes("--dry-run");
-const BASE_PATH = "src/assets/comics";
+const COMICS_CONTENT = "src/content/comics";
 
-// Image resize configurations for comic assets
-const RESIZE_CONFIG = {
-  // Cover images (OG/social sharing)
-  "001/jeromeabel-cc0-leconceptdelapreuve-001-cover.png": { width: 1280, quality: 90, category: "cover" },
-
-  // Comic pages (2-column grid → 624px CSS, need 1280w for 2x retina)
-  "001/jeromeabel-cc0-leconceptdelapreuve-001-p1.png": { width: 1280, quality: 85, category: "page" },
-  "001/jeromeabel-cc0-leconceptdelapreuve-001-p2.png": { width: 1280, quality: 85, category: "page" },
+// Optimization presets per image type
+const PRESETS = {
+  cover: { width: 1280, quality: 90 },
+  page: { width: 1280, quality: 85 },
 };
+
+const isDryRun = process.argv.includes("--dry-run");
+const comicId = process.argv.slice(2).find((arg) => !arg.startsWith("--"));
+
+if (!comicId) {
+  console.error("Usage: pnpm optimize-images <comic-id> [--dry-run]");
+  console.error("Example: pnpm optimize-images 001");
+  process.exit(1);
+}
 
 const log = {
   info: (msg) => console.log(`ℹ️  ${msg}`),
@@ -38,9 +44,43 @@ const log = {
   dry: (msg) => console.log(`🔍 [DRY RUN] ${msg}`),
 };
 
-/**
- * Check if original already exists
- */
+// ─── Frontmatter parsing ─────────────────────────
+
+async function readFrontmatter(id) {
+  const mdPath = join(COMICS_CONTENT, `${id}.md`);
+  let content;
+  try {
+    content = await readFile(mdPath, "utf-8");
+  } catch {
+    console.error(`❌ Comic not found: ${mdPath}`);
+    process.exit(1);
+  }
+
+  const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!fmMatch) {
+    console.error(`❌ No frontmatter found in ${mdPath}`);
+    process.exit(1);
+  }
+
+  const fm = fmMatch[1];
+  const cover = fm.match(/^cover:\s+(.+)/m)?.[1];
+  const pages = [...fm.matchAll(/^\s+-\s+(.+)/gm)].map((m) => m[1]);
+
+  if (!cover || pages.length === 0) {
+    console.error(`❌ Missing cover or pages in frontmatter`);
+    process.exit(1);
+  }
+
+  // Resolve paths relative to the markdown file
+  const mdDir = dirname(mdPath);
+  return {
+    cover: join(mdDir, cover),
+    pages: pages.map((p) => join(mdDir, p)),
+  };
+}
+
+// ─── Image helpers ───────────────────────────────
+
 async function hasOriginal(imagePath) {
   const dir = dirname(imagePath);
   const file = basename(imagePath);
@@ -54,16 +94,12 @@ async function hasOriginal(imagePath) {
   }
 }
 
-/**
- * Backup original image to 'original/' subdirectory
- */
 async function backupOriginal(imagePath) {
   const dir = dirname(imagePath);
   const file = basename(imagePath);
   const originalDir = join(dir, "original");
   const originalPath = join(originalDir, file);
 
-  // Check if original already exists
   if (await hasOriginal(imagePath)) {
     log.warning(`Original already exists: ${originalPath}`);
     return originalPath;
@@ -75,10 +111,7 @@ async function backupOriginal(imagePath) {
     return originalPath;
   }
 
-  // Create original directory if it doesn't exist
   await mkdir(originalDir, { recursive: true });
-
-  // Copy original file
   await copyFile(imagePath, originalPath);
   log.success(`Backed up: ${originalPath}`);
 
@@ -130,7 +163,6 @@ async function optimizeImage(imagePath, config) {
     const saved = originalBytes - newBytes;
     const pct = ((saved / originalBytes) * 100).toFixed(1);
 
-    // Only replace if we actually saved space
     if (saved > 0) {
       await copyFile(tmpPath, imagePath);
       const newMeta = await sharp(imagePath).metadata();
@@ -144,7 +176,6 @@ async function optimizeImage(imagePath, config) {
 
     await unlink(tmpPath);
   } catch (error) {
-    // Clean up temp file on failure
     try { await unlink(tmpPath); } catch {}
     log.error(`Failed to optimize ${imagePath}: ${error.message}`);
     throw error;
@@ -158,44 +189,43 @@ function formatBytes(bytes) {
   return `${(kb / 1024).toFixed(1)} MB`;
 }
 
-/**
- * Process all configured images
- */
-async function processImages() {
-  log.info(`Starting image optimization ${isDryRun ? "(DRY RUN)" : ""}...\n`);
+// ─── Main ────────────────────────────────────────
 
-  const results = {
-    processed: 0,
-    skipped: 0,
-    failed: 0,
-  };
+async function main() {
+  log.info(`Optimizing images for comic ${comicId} ${isDryRun ? "(DRY RUN)" : ""}...\n`);
 
-  for (const [relativePath, config] of Object.entries(RESIZE_CONFIG)) {
-    const imagePath = join(BASE_PATH, relativePath);
+  const { cover, pages } = await readFrontmatter(comicId);
 
+  // Build image list: cover + pages, each with its preset
+  const images = [
+    { path: cover, category: "cover", ...PRESETS.cover },
+    ...pages.map((p) => ({ path: p, category: "page", ...PRESETS.page })),
+  ];
+
+  console.log(`  Cover: ${basename(cover)}`);
+  console.log(`  Pages: ${pages.length} (${pages.map((p) => basename(p)).join(", ")})\n`);
+
+  const results = { processed: 0, skipped: 0, failed: 0 };
+
+  for (const { path: imagePath, category, ...config } of images) {
     try {
-      // Check if file exists
       await stat(imagePath);
 
-      log.info(`Processing [${config.category}]: ${relativePath}`);
-
-      // Backup original
+      log.info(`Processing [${category}]: ${basename(imagePath)}`);
       await backupOriginal(imagePath);
-
-      // Optimize image (resize + compress)
       await optimizeImage(imagePath, config);
 
       results.processed++;
-      console.log(""); // Empty line for readability
+      console.log("");
     } catch (error) {
       if (error.code === "ENOENT") {
         log.warning(`File not found: ${imagePath}`);
         results.skipped++;
       } else {
-        log.error(`Error processing ${relativePath}: ${error.message}`);
+        log.error(`Error processing ${basename(imagePath)}: ${error.message}`);
         results.failed++;
       }
-      console.log(""); // Empty line for readability
+      console.log("");
     }
   }
 
@@ -214,8 +244,7 @@ async function processImages() {
   }
 }
 
-// Run the script
-processImages().catch((error) => {
-  log.error(`Script failed: ${error.message}`);
+main().catch((err) => {
+  log.error(`Script failed: ${err.message}`);
   process.exit(1);
 });
