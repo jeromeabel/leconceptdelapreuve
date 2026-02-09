@@ -8,8 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "optimize-images": "node scripts/optimize-images.js",
-    "generate-cover": "node scripts/generate-cover.js"
+    "optimize": "node scripts/optimize-images.js",
+    "cover": "node scripts/generate-cover.js"
   },
   "dependencies": {
     "@astrojs/netlify": "^6.6.4",

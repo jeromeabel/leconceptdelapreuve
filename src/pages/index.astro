@@ -1,38 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import MetaBar from '../components/MetaBar.astro';
-import ComicImage from '../components/ComicImage.astro';
+import ComicCard from '../components/ComicCard.astro';
 
 const comics = await getCollection('comics');
-const latestComic = comics
-	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-	.at(0);
+const sortedComics = comics.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
-<Layout
-	image={latestComic ? { src: latestComic.data.cover.src, width: latestComic.data.cover.width, height: latestComic.data.cover.height } : undefined}
-	type="article"
-	publishedDate={latestComic?.data.date}
->
-	{latestComic ? (
-		<article>
-			<div class="comic-grid grid grid-cols-1 md:grid-cols-2 gap-2">
-				{latestComic.data.pages.map((page, i) => (
-					<ComicImage
-						src={page}
-						alt={`${latestComic.data.alt} — page ${i + 1}`}
-						index={i}
-					/>
-				))}
-			</div>
-			<MetaBar
-				date={latestComic.data.date}
-				slug={latestComic.id}
-				title={latestComic.data.title}
-			/>
-		</article>
-	) : (
-		<p class="text-zinc-500">Aucune bande dessinée pour le moment.</p>
-	)}
+<Layout type="website">
+	<section class="flex flex-col">
+		{sortedComics.map((comic) => (
+			<ComicCard comic={comic} />
+		))}
+	</section>
 </Layout>
