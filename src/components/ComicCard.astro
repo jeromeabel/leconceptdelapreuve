@@ -1,0 +1,28 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import MetaBar from './MetaBar.astro';
+import ComicImage from './ComicImage.astro';
+
+interface Props {
+	comic: CollectionEntry<'comics'>;
+}
+
+const { comic } = Astro.props;
+---
+
+<article class="py-8 border-t border-zinc-200/70">
+	<div class="comic-grid grid grid-cols-1 md:grid-cols-2 gap-2">
+		{comic.data.pages.map((page, i) => (
+			<ComicImage
+				src={page}
+				alt={`${comic.data.alt} — page ${i + 1}`}
+				index={i}
+			/>
+		))}
+	</div>
+	<MetaBar
+		date={comic.data.date}
+		slug={comic.id}
+		title={comic.data.title}
+	/>
+</article>
