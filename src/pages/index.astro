@@ -8,7 +8,7 @@ const sortedComics = comics.sort((a, b) => b.data.date.valueOf() - a.data.date.v
 ---
 
 <Layout type="website">
-	<section class="flex flex-col">
+	<section class="flex flex-col gap-12">
 		{sortedComics.map((comic) => (
 			<ComicCard comic={comic} />
 		))}

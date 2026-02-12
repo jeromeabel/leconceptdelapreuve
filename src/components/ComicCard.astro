@@ -10,7 +10,7 @@ interface Props {
 const { comic } = Astro.props;
 ---
 
-<article class="py-8 border-t border-zinc-200/70">
+<article class="px-12 pt-12 pb-6 border border-zinc-300">
 	<div class="comic-grid grid grid-cols-1 md:grid-cols-2 gap-2">
 		{comic.data.pages.map((page, i) => (
 			<ComicImage

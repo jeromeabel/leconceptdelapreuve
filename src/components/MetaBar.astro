@@ -28,7 +28,7 @@ const shareLinks = [
 ];
 ---
 
-<div class="flex flex-wrap items-center gap-4 pt-2 text-sm text-zinc-600">
+<div class="flex flex-wrap items-center gap-4 pt-2 text-sm text-zinc-600 justify-end">
 	<time datetime={date.toISOString()}>{formattedDate}</time>
 
 	<span class="text-zinc-300" aria-hidden="true">|</span>
@@ -80,8 +80,6 @@ const shareLinks = [
 			</button>
 		</div>
 	</meta-actions>
-
-    <span class="text-zinc-300" aria-hidden="true">|</span>
 
 	<a
 		href={`/${slug}`}
