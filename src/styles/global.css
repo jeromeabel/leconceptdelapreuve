@@ -1,11 +1,20 @@
 @import "@fontsource/inconsolata/400.css";
 @import "@fontsource/inconsolata/600.css";
-@import "@fontsource/inconsolata/700.css";
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inconsolata", monospace;
   --font-mono: "Inconsolata", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 a {

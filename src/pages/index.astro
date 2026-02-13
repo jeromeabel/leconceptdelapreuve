@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import ComicCard from '../components/ComicCard.astro';
+import ScrollHelper from '../components/ScrollHelper.astro';
 
 const comics = await getCollection('comics');
 const sortedComics = comics.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -9,8 +10,21 @@ const sortedComics = comics.sort((a, b) => b.data.date.valueOf() - a.data.date.v
 
 <Layout type="website">
 	<section class="flex flex-col">
-		{sortedComics.map((comic) => (
-			<ComicCard comic={comic} />
-		))}
+		{sortedComics.map((comic, index) => {
+			const currentId = `comic-${comic.id}`;
+			const nextComic = sortedComics[index + 1];
+			const nextId = nextComic ? `comic-${nextComic.id}` : null;
+
+			return (
+				<>
+					<div id={currentId} class="scroll-mt-4">
+						<ComicCard comic={comic} eager={index === 0} />
+					</div>
+					{nextId && (
+						<ScrollHelper href={`#${nextId}`} />
+					)}
+				</>
+			);
+		})}
 	</section>
 </Layout>
