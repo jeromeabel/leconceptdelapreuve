@@ -17,7 +17,14 @@ const sortedComics = comics.sort((a, b) => b.data.date.valueOf() - a.data.date.v
 
 			return (
 				<>
-					<div id={currentId} class="scroll-mt-4">
+					<div
+						id={currentId}
+						class:list={[
+							'scroll-mt-4 transition-opacity duration-1000 ease-out',
+							index === 0 ? 'opacity-100' : 'opacity-40',
+						]}
+						data-reveal={index > 0 ? '' : undefined}
+					>
 						<ComicCard comic={comic} eager={index === 0} />
 					</div>
 					{nextId && (
@@ -28,3 +35,24 @@ const sortedComics = comics.sort((a, b) => b.data.date.valueOf() - a.data.date.v
 		})}
 	</section>
 </Layout>
+
+<script>
+	const reveals = document.querySelectorAll<HTMLElement>('[data-reveal]');
+
+	const observer = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.isIntersecting) {
+					entry.target.classList.remove('opacity-10');
+					entry.target.classList.add('opacity-100');
+					observer.unobserve(entry.target);
+				}
+			}
+		},
+		{ threshold: 0.40 },
+	);
+
+	for (const el of reveals) {
+		observer.observe(el);
+	}
+</script>
