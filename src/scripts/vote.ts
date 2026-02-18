@@ -12,9 +12,18 @@ const fetchJson = async <T>(url: string, options?: RequestInit): Promise<T> => {
 };
 
 const updateButtonUI = (button: HTMLButtonElement, { count, voted }: VoteState): void => {
-  const span = button.querySelector("span");
-  if (span) span.textContent = String(count);
+  const countEl = button.querySelector<HTMLElement>(".count");
+  if (countEl) countEl.textContent = String(count);
   button.setAttribute("aria-pressed", String(voted));
+};
+
+const popHeart = (button: HTMLButtonElement): void => {
+  const heart = button.querySelector<HTMLElement>(".heart");
+  if (!heart) return;
+  heart.classList.remove("heart-pop");
+  void heart.offsetWidth; // force reflow to restart animation
+  heart.classList.add("heart-pop");
+  heart.addEventListener("animationend", () => heart.classList.remove("heart-pop"), { once: true });
 };
 
 export async function initVote(): Promise<void> {
@@ -64,7 +73,10 @@ export async function initVote(): Promise<void> {
   };
 
   for (const [comicId, button] of buttonMap) {
-    button.addEventListener("click", () => handleVote(comicId, button));
+    button.addEventListener("click", () => {
+      popHeart(button);
+      handleVote(comicId, button);
+    });
   }
 
   // Hydrate initial state
