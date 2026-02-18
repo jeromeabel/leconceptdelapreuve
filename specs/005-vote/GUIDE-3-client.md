@@ -214,18 +214,55 @@ finally { pending.delete(comicId); } // clears in all outcomes
 
 ### Step 10 — Production deploy
 
+**Setup Turso** — install, login, create DB, get credentials, push schema:
+```bash
+curl -sSfL https://get.tur.so/install.sh | bash
+source ~/.bashrc
+turso auth login
+turso db create leconceptdelapreuve
+turso db show leconceptdelapreuve --url   # → ASTRO_DB_REMOTE_URL
+turso db tokens create leconceptdelapreuve # → ASTRO_DB_APP_TOKEN
+pnpm astro db push --remote
+```
 
---remote switches the target from your local SQLite file to the hosted Turso database.                                        
-                                                                                                                                             
-  This matters in two places:                                                                                                                  
-                                                                                                                                               
-  astro db push --remote   # schema: create/update tables on the remote DB                                                                     
-  astro build --remote     # build: let the built app talk to the remote DB                                                                    
+**What does `astro db push --remote` do?**
+- `--remote` switches the target from your local SQLite file to the hosted Turso database.
+- Pushes your `defineDb` table schemas to the remote database — creates or updates tables.
+- Schema always before build: if you update a table locally, push first, then build. Reversed order = runtime crash.
 
-  Without --remote on the build, the compiled server functions would look for a local file that doesn't exist on Netlify's servers — every API
-  call would crash.
+**Why store the DB token in environment variables, not in code?**
+- Tokens in source code end up in git history forever — even after deletion, old commits still contain them.
+- `.env` is git-ignored: the token never gets committed.
+- To rotate a compromised token: generate a new one and update the value in Netlify's UI — no git rewrite needed.
+- Add both `ASTRO_DB_REMOTE_URL` and `ASTRO_DB_APP_TOKEN` in Netlify → Site configuration → Environment variables.
 
+**What's the role of `netlify.toml`?**
+- Moves deployment config into version control — visible in the repo, not hidden in Netlify's UI.
+- Sets `astro build --remote` as the build command so the compiled server functions connect to Turso, not a missing local file.
 
+---
+
+**Common use cases**
+
+Update a table (add a column, change a constraint):
+```bash
+# 1. Edit db/config.ts, then:
+pnpm astro db push --remote   # update schema on Turso
+pnpm build                    # netlify.toml handles --remote on deploy
+```
+
+Develop against the real remote data instead of an empty local DB:
+```bash
+pnpm astro dev --remote       # dev server talks to Turso directly
+```
+
+Copy remote data to local (seed local DB with real production data):
+```bash
+turso db shell leconceptdelapreuve ".dump" > dump.sql
+sqlite3 .astro/content.db < dump.sql
+```
+
+In more complex projects, schema changes become proper **migrations** — versioned, reversible SQL. Astro DB keeps it simple, but the mental model is the same: schema changes always precede code that depends on them.
 
 ---
 
