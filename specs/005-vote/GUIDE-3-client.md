@@ -266,6 +266,43 @@ In more complex projects, schema changes become proper **migrations** — versio
 
 ---
 
+---
+
+### Extra — Client script architecture
+
+**`initVote` is DOM-driven, not config-driven**
+- It queries `button[data-comic-id]` at runtime, so it naturally adapts to any page without knowing about routing.
+- On `index.astro`: many buttons → `buttonMap` has N entries → one batch request `/api/vote?comic=a,b,c`.
+- On `[slug].astro`: one button → `buttonMap` has 1 entry → `/api/vote?comic=<slug>`.
+- No special handling needed per page. The HTML is the source of truth for what IDs exist.
+
+**Build-time comicIds: not needed**
+- Votes are dynamic data — baking IDs or counts into the HTML at build time gives stale values.
+- DOM-discovery is the right pattern: the script doesn't need to know about routing or content structure.
+
+**Astro script deduplication**
+- Astro deduplicates scripts *within a page render*: if the same component appears 10 times, its `<script>` runs once.
+- `Layout.astro` appears once per page, so `initVote()` runs once per full page load. No issue.
+- Without View Transitions, every navigation is a full reload → script re-runs fresh → correct.
+- With View Transitions (if added later), the Layout script won't re-run on soft navigation. The fix:
+
+```ts
+document.addEventListener('astro:page-load', () => initVote());
+```
+
+**Closure-scoped state vs global store**
+
+| Scope | Survives navigation | Accessible outside `initVote` | Risk |
+|---|---|---|---|
+| Closure (current) | No (full reload) | No | None |
+| Module-level (`const store = new Map()` at top of file) | Yes (with View Transitions) | No | Stale state if `initVote` re-runs |
+| `window.voteStore` | Yes | Yes, from anywhere | Name collisions, implicit coupling |
+
+- The current closure is the minimum viable scope — correct for a site without View Transitions.
+- Escalate scope only when there's a concrete reason: cross-navigation persistence, or a second consumer of the state.
+- `window.*` is almost never worth it — implicit global contract, no benefit over a module-level export.
+- A module-level store would only pay off if View Transitions are added (soft navigations don't reload the page, module singleton survives, no re-fetch needed).
+
 ← Previous: [GUIDE-2-api.md](GUIDE-2-api.md)
 
 ## Quick reference (all steps)
