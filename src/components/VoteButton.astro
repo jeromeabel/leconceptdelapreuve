@@ -16,7 +16,7 @@ const { slug } = Astro.props;
 	data-comic-id={slug}
 	data-umami-event="vote"
 	data-umami-event-comic={slug}
-	class="vote-btn"
+	class="vote-btn w-8"
 >
 	<span class="heart" aria-hidden="true">
 		<Icon name="carbon:favorite" class="icon-outline size-4" />
@@ -29,12 +29,11 @@ const { slug } = Astro.props;
 		display: inline-flex;
 		align-items: center;
 		gap: 0.35rem;
-		color: var(--color-zinc-400);
+		color: var(--color-zinc-500);
 		cursor: default;
 		transition: color 150ms ease-out;
 		background: none;
 		border: none;
-		padding: 0;
 		font: inherit;
 	}
 
