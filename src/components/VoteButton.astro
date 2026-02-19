@@ -16,12 +16,14 @@ const { slug } = Astro.props;
 	data-comic-id={slug}
 	data-umami-event="vote"
 	data-umami-event-comic={slug}
-	class="vote-btn w-8"
+	class="vote-btn px-2"
+	title="Ce dessin vous a bien fait marrer ?"
 >
 	<span class="heart" aria-hidden="true">
 		<Icon name="carbon:favorite" class="icon-outline size-4" />
 		<Icon name="carbon:favorite-filled" class="icon-filled size-4" />
-	</span><span class="count tabular-nums">—</span>
+	</span>
+	<span class="count tabular-nums">—</span>
 </button>
 
 <style>

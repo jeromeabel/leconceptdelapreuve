@@ -15,25 +15,22 @@ html {
   }
 }
 
-a {
-  @apply transition-colors duration-150 ease-out;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-decoration-color: currentColor;
-  text-underline-offset: 0.2em;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, text-decoration-thickness;
-}
+@layer base {
+  a {
+    @apply transition-colors duration-150 ease-out;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: currentColor;
+    text-underline-offset: 0.2em;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, text-decoration-thickness;
+  }
 
-a:hover,
-a:focus-visible {
-  @apply text-zinc-900;
-  text-decoration-thickness: 2px;
+  a:hover,
+  a:focus-visible {
+    @apply text-zinc-900;
+    text-decoration-thickness: 2px;
+  }
 }
-
-.no-underline {
-  text-decoration: none;
-}
-
 
 .page-shell {
   max-width: var(--page-max);

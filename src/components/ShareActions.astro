@@ -34,6 +34,7 @@ const shareLinks = [
 				data-popup={popup ? 'true' : undefined}
 				data-umami-event="share-bluesky"
 				data-umami-event-comic={slug}
+				title={`Partager le dessin "${title}" sur Bluesky`}
 			>
 				<Icon name={icon} class="size-4" aria-hidden="true" />
 			</a>
@@ -47,17 +48,19 @@ const shareLinks = [
 			data-title={title}
 			data-umami-event="share-native"
 			data-umami-event-comic={slug}
+			title={`Partager le dessin "${title}"`}
 		>
 			<Icon name="carbon:share" class="size-4" aria-hidden="true" />
 		</button>
 
 		<button
 			type="button"
-			class="js-copy-link inline-flex items-center justify-center p-2 text-zinc-600 hover:text-zinc-900 transition-colors cursor-pointer"
+			class="js-copy-link items-center justify-center p-2 text-zinc-600 hover:text-zinc-900 transition-colors cursor-pointer hidden md:inline-flex"
 			aria-label="Copier le lien"
 			data-url={permalink}
 			data-umami-event="copy-link"
 			data-umami-event-comic={slug}
+			title={`Copier le lien du dessin "${title}"`}
 		>
 			<span class="js-copy-icon">
 				<Icon name="carbon:copy" class="size-4" aria-hidden="true" />

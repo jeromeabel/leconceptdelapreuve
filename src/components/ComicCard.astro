@@ -33,31 +33,31 @@ const formattedDate = comic.data.date.toLocaleDateString('fr-FR', {
 	</article>
 
 	<!-- Label strip -->
-	<div class="flex flex-col gap-2 pt-2 md:flex-row md:items-center md:gap-x-3 md:pt-3 text-sm">
+	<div class="flex gap-2 pt-3 items-center gap-x-3 text-sm justify-between">
 
-	<!-- Info: id · title · date -->
-	<div class="flex items-baseline min-w-0 gap-x-2">
-		<a
-		href={`/${comic.id}`}
-		class="group no-underline inline-flex items-baseline min-w-0 gap-x-2 text-zinc-600 transition-colors duration-150 hover:text-zinc-950"
-		data-umami-event="click-permalink"
-		data-umami-event-comic={comic.id}
-		>
-		<span class="shrink-0 font-semibold tabular-nums group-hover:underline">{comic.id}</span>
-		<span class="shrink-0 text-zinc-300" aria-hidden="true">·</span>
-		<span class="min-w-0 truncate group-hover:underline">{comic.data.title}</span>
-		</a>
-		<span class="shrink-0 text-zinc-300" aria-hidden="true">·</span>
-		<time datetime={comic.data.date.toISOString()} class="shrink-0 text-zinc-400">
-		{formattedDate}
-		</time>
+		<!-- Info: id · title · date -->
+		<div class="flex flex-col md:flex-row gap-x-2">
+			<a
+				href={`/${comic.id}`}
+				data-umami-event="click-permalink"
+				data-umami-event-comic={comic.id}
+				class="no-underline text-zinc-950 hover:text-zinc-600"
+				title={`Ouvrir la page du dessin "${comic.data.title}"`}
+			>
+				{comic.id} <span aria-hidden="true" class="text-zinc-400">·</span> {comic.data.title}
+			</a>
+			<div>
+				<span class="shrink-0 text-zinc-400 hidden md:inline-block" aria-hidden="true">·</span>
+				<time datetime={comic.data.date.toISOString()} class="shrink-0 text-zinc-400">
+					{formattedDate}
+				</time>
+			</div>
+		</div>
+
+		<!-- Actions -->
+		<div class="flex shrink-0 gap-3">
+			<VoteButton slug={comic.id} />
+			<ShareActions slug={comic.id} title={comic.data.title} />
+		</div>
 	</div>
-
-	<!-- Actions -->
-	<div class="flex shrink-0 items-center gap-3 md:ml-auto">
-		<VoteButton slug={comic.id} />
-		<ShareActions slug={comic.id} title={comic.data.title} />
-	</div>
-
-</div>
 </div>
